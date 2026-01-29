@@ -14,10 +14,6 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  console.log('[Middleware] Path:', pathname)
-  console.log('[Middleware] Token exists:', !!token)
-  console.log('[Middleware] Token role:', token?.role || 'none')
-
   // Public routes that don't need authentication
   const publicRoutes = ['/login', '/api/auth', '/api/calculator']
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
