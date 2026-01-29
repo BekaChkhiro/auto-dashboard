@@ -40,10 +40,12 @@ function LoginForm() {
       })
 
       if (result?.error) {
-        setError('Invalid email or password')
+        setError(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error)
+      } else if (result?.ok) {
+        // Force a hard navigation to ensure cookies are sent
+        window.location.href = callbackUrl || '/'
       } else {
-        router.push(callbackUrl)
-        router.refresh()
+        setError('An error occurred. Please try again.')
       }
     } catch {
       setError('An error occurred. Please try again.')
