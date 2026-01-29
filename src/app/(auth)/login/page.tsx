@@ -39,15 +39,18 @@ function LoginForm() {
         redirect: false,
       })
 
+      console.log('SignIn result:', JSON.stringify(result, null, 2))
+
       if (result?.error) {
         setError(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error)
       } else if (result?.ok) {
         // Force a hard navigation to ensure cookies are sent
         window.location.href = callbackUrl || '/'
       } else {
-        setError('An error occurred. Please try again.')
+        setError('Login failed. Please check your credentials.')
       }
-    } catch {
+    } catch (err) {
+      console.error('SignIn error:', err)
       setError('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)
