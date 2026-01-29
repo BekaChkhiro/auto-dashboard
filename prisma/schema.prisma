@@ -1,0 +1,556 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  ADMIN
+  DEALER
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+}
+
+enum DamageType {
+  CLEAN
+  SALVAGE
+  REBUILT
+  FLOOD
+  VANDALISM
+  HAIL
+  MECHANICAL
+  OTHER
+}
+
+enum PhotoStage {
+  AUCTION
+  PORT
+  ARRIVAL
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum BalanceRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  INVOICE_PAYMENT
+  ADJUSTMENT
+}
+
+enum NotificationType {
+  STATUS_CHANGE
+  BALANCE
+  INVOICE
+  SYSTEM
+}
+
+// ============================================================================
+// USER MODEL
+// ============================================================================
+
+model User {
+  id       String     @id @default(cuid())
+  email    String     @unique
+  password String
+  role     UserRole   @default(DEALER)
+  status   UserStatus @default(ACTIVE)
+
+  // Dealer profile fields
+  name                 String
+  phone                String
+  address              String
+  companyName          String?
+  identificationNumber String?
+
+  // Financial
+  balance  Decimal @default(0) @db.Decimal(12, 2)
+  discount Decimal @default(0) @db.Decimal(12, 2)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  vehicles              Vehicle[]
+  vehicleComments       VehicleComment[]
+  statusChanges         VehicleStatusHistory[] @relation("ChangedBy")
+  balanceRequests       BalanceRequest[]       @relation("DealerRequests")
+  processedRequests     BalanceRequest[]       @relation("ProcessedBy")
+  invoices              Invoice[]              @relation("DealerInvoices")
+  createdInvoices       Invoice[]              @relation("CreatedBy")
+  transactions          Transaction[]          @relation("DealerTransactions")
+  createdTransactions   Transaction[]          @relation("TransactionCreatedBy")
+  notifications         Notification[]
+  auditLogs             AuditLog[]
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+}
+
+// ============================================================================
+// VEHICLE MODEL
+// ============================================================================
+
+model Vehicle {
+  id String @id @default(cuid())
+
+  // Basic info
+  vin   String @unique
+  year  Int
+  color String?
+
+  // Auction info
+  lotNumber   String
+  auctionLink String?
+
+  // Technical
+  damageType DamageType @default(CLEAN)
+  hasKeys    Boolean    @default(true)
+
+  // Transportation
+  shipName        String?
+  containerNumber String?
+  eta             DateTime?
+
+  // Price (final price after dealer discount)
+  transportationPrice Decimal @db.Decimal(12, 2)
+
+  // Soft delete
+  isArchived Boolean  @default(false)
+  archivedAt DateTime?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Foreign keys
+  dealerId  String
+  makeId    String
+  modelId   String
+  auctionId String
+  statusId  String
+  countryId String
+  stateId   String
+  cityId    String?
+  portId    String?
+
+  // Relations
+  dealer  User    @relation(fields: [dealerId], references: [id], onDelete: Cascade)
+  make    Make    @relation(fields: [makeId], references: [id])
+  model   Model   @relation(fields: [modelId], references: [id])
+  auction Auction @relation(fields: [auctionId], references: [id])
+  status  Status  @relation(fields: [statusId], references: [id])
+  country Country @relation(fields: [countryId], references: [id])
+  state   State   @relation(fields: [stateId], references: [id])
+  city    City?   @relation(fields: [cityId], references: [id])
+  port    Port?   @relation(fields: [portId], references: [id])
+
+  photos        VehiclePhoto[]
+  statusHistory VehicleStatusHistory[]
+  comments      VehicleComment[]
+  invoiceItems  InvoiceItem[]
+
+  @@index([vin])
+  @@index([lotNumber])
+  @@index([dealerId])
+  @@index([statusId])
+  @@index([isArchived])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// VEHICLE PHOTO MODEL
+// ============================================================================
+
+model VehiclePhoto {
+  id        String     @id @default(cuid())
+  url       String
+  stage     PhotoStage
+  order     Int        @default(0)
+  createdAt DateTime   @default(now())
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([stage])
+}
+
+// ============================================================================
+// VEHICLE STATUS HISTORY MODEL
+// ============================================================================
+
+model VehicleStatusHistory {
+  id        String   @id @default(cuid())
+  changedAt DateTime @default(now())
+
+  vehicleId   String
+  statusId    String
+  changedById String
+
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  status    Status  @relation(fields: [statusId], references: [id])
+  changedBy User    @relation("ChangedBy", fields: [changedById], references: [id])
+
+  @@index([vehicleId])
+  @@index([changedAt])
+}
+
+// ============================================================================
+// VEHICLE COMMENT MODEL
+// ============================================================================
+
+model VehicleComment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  vehicleId String
+  userId    String
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@index([vehicleId])
+}
+
+// ============================================================================
+// STATUS MODEL
+// ============================================================================
+
+model Status {
+  id      String  @id @default(cuid())
+  nameKa  String  @map("name_ka")
+  nameEn  String  @map("name_en")
+  order   Int
+  color   String?
+
+  vehicles      Vehicle[]
+  statusHistory VehicleStatusHistory[]
+
+  @@index([order])
+}
+
+// ============================================================================
+// LOCATION MODELS
+// ============================================================================
+
+model Country {
+  id     String @id @default(cuid())
+  nameKa String @map("name_ka")
+  nameEn String @map("name_en")
+  code   String @unique
+
+  states   State[]
+  vehicles Vehicle[]
+
+  @@index([code])
+}
+
+model State {
+  id     String @id @default(cuid())
+  nameKa String @map("name_ka")
+  nameEn String @map("name_en")
+  code   String
+
+  countryId String
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  cities   City[]
+  ports    Port[]
+  vehicles Vehicle[]
+
+  @@index([countryId])
+  @@index([code])
+}
+
+model City {
+  id   String @id @default(cuid())
+  name String
+
+  stateId String
+  state   State  @relation(fields: [stateId], references: [id], onDelete: Cascade)
+
+  vehicles     Vehicle[]
+  towingPrices TowingPrice[]
+
+  @@index([stateId])
+  @@index([name])
+}
+
+model Port {
+  id            String  @id @default(cuid())
+  name          String
+  isDestination Boolean @default(false)
+
+  stateId String
+  state   State  @relation(fields: [stateId], references: [id], onDelete: Cascade)
+
+  vehicles            Vehicle[]
+  towingPrices        TowingPrice[]
+  shippingPricesFrom  ShippingPrice[] @relation("OriginPort")
+  shippingPricesTo    ShippingPrice[] @relation("DestinationPort")
+
+  @@index([stateId])
+  @@index([isDestination])
+}
+
+// ============================================================================
+// MAKE & MODEL
+// ============================================================================
+
+model Make {
+  id   String @id @default(cuid())
+  name String @unique
+
+  models   Model[]
+  vehicles Vehicle[]
+
+  @@index([name])
+}
+
+model Model {
+  id   String @id @default(cuid())
+  name String
+
+  makeId String
+  make   Make   @relation(fields: [makeId], references: [id], onDelete: Cascade)
+
+  vehicles Vehicle[]
+
+  @@index([makeId])
+  @@index([name])
+}
+
+// ============================================================================
+// AUCTION MODEL
+// ============================================================================
+
+model Auction {
+  id   String @id @default(cuid())
+  name String @unique
+
+  vehicles Vehicle[]
+
+  @@index([name])
+}
+
+// ============================================================================
+// INVOICE MODELS
+// ============================================================================
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  totalAmount   Decimal       @db.Decimal(12, 2)
+  status        InvoiceStatus @default(PENDING)
+
+  paidAt          DateTime?
+  paidFromBalance Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+
+  dealerId    String
+  createdById String
+
+  dealer    User @relation("DealerInvoices", fields: [dealerId], references: [id])
+  createdBy User @relation("CreatedBy", fields: [createdById], references: [id])
+
+  items InvoiceItem[]
+
+  @@index([dealerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  amount      Decimal @db.Decimal(12, 2)
+  description String?
+
+  invoiceId String
+  vehicleId String
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+
+  @@index([invoiceId])
+}
+
+// ============================================================================
+// BALANCE REQUEST MODEL
+// ============================================================================
+
+model BalanceRequest {
+  id         String               @id @default(cuid())
+  amount     Decimal              @db.Decimal(12, 2)
+  receiptUrl String
+  comment    String?
+  status     BalanceRequestStatus @default(PENDING)
+
+  processedAt  DateTime?
+  adminComment String?
+
+  createdAt DateTime @default(now())
+
+  dealerId      String
+  processedById String?
+
+  dealer      User  @relation("DealerRequests", fields: [dealerId], references: [id])
+  processedBy User? @relation("ProcessedBy", fields: [processedById], references: [id])
+
+  @@index([dealerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// TRANSACTION MODEL
+// ============================================================================
+
+model Transaction {
+  id           String          @id @default(cuid())
+  type         TransactionType
+  amount       Decimal         @db.Decimal(12, 2)
+  balanceAfter Decimal         @db.Decimal(12, 2)
+
+  referenceType String?
+  referenceId   String?
+  description   String?
+
+  createdAt DateTime @default(now())
+
+  dealerId    String
+  createdById String
+
+  dealer    User @relation("DealerTransactions", fields: [dealerId], references: [id])
+  createdBy User @relation("TransactionCreatedBy", fields: [createdById], references: [id])
+
+  @@index([dealerId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// NOTIFICATION MODEL
+// ============================================================================
+
+model Notification {
+  id        String           @id @default(cuid())
+  titleKa   String           @map("title_ka")
+  titleEn   String           @map("title_en")
+  messageKa String           @map("message_ka")
+  messageEn String           @map("message_en")
+  type      NotificationType
+  isRead    Boolean          @default(false)
+
+  referenceType String?
+  referenceId   String?
+
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// AUDIT LOG MODEL
+// ============================================================================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String
+  oldData    Json?
+  newData    Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entityType])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// CALCULATOR MODELS
+// ============================================================================
+
+model TowingPrice {
+  id    String  @id @default(cuid())
+  price Decimal @db.Decimal(12, 2)
+
+  cityId String
+  portId String
+
+  city City @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  port Port @relation(fields: [portId], references: [id], onDelete: Cascade)
+
+  @@unique([cityId, portId])
+  @@index([cityId])
+  @@index([portId])
+}
+
+model ShippingPrice {
+  id    String  @id @default(cuid())
+  price Decimal @db.Decimal(12, 2)
+
+  originPortId      String
+  destinationPortId String
+
+  originPort      Port @relation("OriginPort", fields: [originPortId], references: [id], onDelete: Cascade)
+  destinationPort Port @relation("DestinationPort", fields: [destinationPortId], references: [id], onDelete: Cascade)
+
+  @@unique([originPortId, destinationPortId])
+  @@index([originPortId])
+  @@index([destinationPortId])
+}
+
+model InsurancePrice {
+  id       String  @id @default(cuid())
+  minValue Decimal @db.Decimal(12, 2)
+  maxValue Decimal @db.Decimal(12, 2)
+  price    Decimal @db.Decimal(12, 2)
+
+  @@index([minValue, maxValue])
+}
+
+model SystemSettings {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+
+  @@index([key])
+}

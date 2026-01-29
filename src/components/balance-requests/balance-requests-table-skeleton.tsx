@@ -1,0 +1,72 @@
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+
+export function BalanceRequestsTableSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Dealer</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="hidden md:table-cell">Comment</TableHead>
+            <TableHead className="hidden lg:table-cell">Processed By</TableHead>
+            <TableHead>Submitted</TableHead>
+            <TableHead className="w-[50px]"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <TableRow key={i}>
+              <TableCell>
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-[120px]" />
+                  <Skeleton className="h-3 w-[150px]" />
+                </div>
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-[80px]" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-5 w-[70px] rounded-full" />
+              </TableCell>
+              <TableCell className="hidden md:table-cell">
+                <Skeleton className="h-4 w-[150px]" />
+              </TableCell>
+              <TableCell className="hidden lg:table-cell">
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-[100px]" />
+                  <Skeleton className="h-3 w-[80px]" />
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-[80px]" />
+                  <Skeleton className="h-3 w-[60px]" />
+                </div>
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-8 w-8 rounded" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-4 w-[150px]" />
+        <div className="flex gap-2">
+          <Skeleton className="h-9 w-[80px]" />
+          <Skeleton className="h-9 w-[80px]" />
+        </div>
+      </div>
+    </div>
+  )
+}
