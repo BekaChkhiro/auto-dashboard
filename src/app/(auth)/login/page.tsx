@@ -39,20 +39,20 @@ function LoginForm() {
         redirect: false,
       })
 
-      console.log('SignIn result:', JSON.stringify(result, null, 2))
-
       if (result?.error) {
-        setError(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error)
+        setError('Invalid email or password')
+        setIsLoading(false)
       } else if (result?.ok) {
-        // Force a hard navigation to ensure cookies are sent
-        window.location.href = callbackUrl || '/'
+        // Redirect to admin or dealer based on callbackUrl
+        const targetUrl = callbackUrl.startsWith('/admin') ? '/admin' :
+                          callbackUrl.startsWith('/dealer') ? '/dealer' : '/'
+        window.location.replace(targetUrl)
       } else {
-        setError('Login failed. Please check your credentials.')
+        setError('Login failed')
+        setIsLoading(false)
       }
-    } catch (err) {
-      console.error('SignIn error:', err)
-      setError('An error occurred. Please try again.')
-    } finally {
+    } catch {
+      setError('An error occurred')
       setIsLoading(false)
     }
   }
