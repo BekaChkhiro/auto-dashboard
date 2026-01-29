@@ -1,34 +1,24 @@
+import { auth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
 
-export async function middleware(request: NextRequest) {
-  const secret = process.env.NEXTAUTH_SECRET
+export default auth((request) => {
+  const { nextUrl } = request
+  const pathname = nextUrl.pathname
+  const isLoggedIn = !!request.auth
+  const userRole = request.auth?.user?.role
 
-  // Debug logging
-  console.log('[Middleware] Path:', request.nextUrl.pathname)
-  console.log('[Middleware] NEXTAUTH_SECRET exists:', !!secret)
-  console.log('[Middleware] NEXTAUTH_SECRET length:', secret?.length || 0)
-
-  const token = await getToken({
-    req: request,
-    secret,
-  })
-
-  console.log('[Middleware] Token exists:', !!token)
-  console.log('[Middleware] Token role:', token?.role || 'none')
-
-  const { pathname } = request.nextUrl
+  console.log('[Middleware] Path:', pathname)
+  console.log('[Middleware] Is logged in:', isLoggedIn)
+  console.log('[Middleware] User role:', userRole || 'none')
 
   // Public routes that don't need authentication
   const publicRoutes = ['/login', '/api/auth', '/api/calculator']
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
 
   // Redirect authenticated users away from login
-  if (isPublicRoute && token) {
-    const role = token.role as string
-    const redirectUrl = role === 'ADMIN' ? '/admin' : '/dealer'
-    return NextResponse.redirect(new URL(redirectUrl, request.url))
+  if (isPublicRoute && isLoggedIn) {
+    const redirectUrl = userRole === 'ADMIN' ? '/admin' : '/dealer'
+    return NextResponse.redirect(new URL(redirectUrl, nextUrl))
   }
 
   // Allow public routes
@@ -37,25 +27,23 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect unauthenticated users to login
-  if (!token) {
-    const loginUrl = new URL('/login', request.url)
+  if (!isLoggedIn) {
+    const loginUrl = new URL('/login', nextUrl)
     loginUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(loginUrl)
   }
 
-  const role = token.role as string
-
   // Role-based route protection
-  if (pathname.startsWith('/admin') && role !== 'ADMIN') {
-    return NextResponse.redirect(new URL('/dealer', request.url))
+  if (pathname.startsWith('/admin') && userRole !== 'ADMIN') {
+    return NextResponse.redirect(new URL('/dealer', nextUrl))
   }
 
-  if (pathname.startsWith('/dealer') && role !== 'DEALER') {
-    return NextResponse.redirect(new URL('/admin', request.url))
+  if (pathname.startsWith('/dealer') && userRole !== 'DEALER') {
+    return NextResponse.redirect(new URL('/admin', nextUrl))
   }
 
   return NextResponse.next()
-}
+})
 
 export const config = {
   matcher: [
