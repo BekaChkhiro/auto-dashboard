@@ -13,12 +13,7 @@ interface LightboxProps {
   onOpenChange: (open: boolean) => void
 }
 
-export function Lightbox({
-  images,
-  initialIndex = 0,
-  open,
-  onOpenChange,
-}: LightboxProps) {
+export function Lightbox({ images, initialIndex = 0, open, onOpenChange }: LightboxProps) {
   const [currentIndex, setCurrentIndex] = React.useState(initialIndex)
 
   // Reset index when opening or when initial index changes
@@ -109,6 +104,8 @@ export function Lightbox({
             <img
               src={currentImage?.url}
               alt={currentImage?.alt || `Image ${currentIndex + 1}`}
+              loading="eager"
+              decoding="async"
               className="max-h-full max-w-full object-contain"
             />
           </div>
@@ -134,9 +131,7 @@ export function Lightbox({
           )}
 
           {/* Hidden title for accessibility */}
-          <DialogPrimitive.Title className="sr-only">
-            Image viewer
-          </DialogPrimitive.Title>
+          <DialogPrimitive.Title className="sr-only">Image viewer</DialogPrimitive.Title>
           <DialogPrimitive.Description className="sr-only">
             Use arrow keys to navigate between images. Press escape to close.
           </DialogPrimitive.Description>

@@ -3,7 +3,17 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { CheckCircle, XCircle, Wallet, CreditCard, User, FileText, ExternalLink, Download } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import {
+  CheckCircle,
+  XCircle,
+  Wallet,
+  CreditCard,
+  User,
+  FileText,
+  ExternalLink,
+  Download,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -26,7 +36,11 @@ import {
 import { toast } from '@/hooks/use-toast'
 import { useMounted } from '@/hooks/use-mounted'
 import { InvoiceStatusBadge } from './invoice-status-badge'
-import { markInvoiceAsPaid, cancelInvoice, type InvoiceDetail as InvoiceDetailType } from '@/lib/actions/invoices'
+import {
+  markInvoiceAsPaid,
+  cancelInvoice,
+  type InvoiceDetail as InvoiceDetailType,
+} from '@/lib/actions/invoices'
 import { formatCurrency, formatDateTime } from '@/lib/formatting'
 
 interface InvoiceDetailProps {
@@ -40,6 +54,8 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
   const [showPayFromBalanceDialog, setShowPayFromBalanceDialog] = useState(false)
   const [showPayExternalDialog, setShowPayExternalDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const t = useTranslations('invoiceDetail')
+  const tCommon = useTranslations('common')
 
   const handlePayFromBalance = () => {
     startTransition(async () => {
@@ -47,14 +63,14 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
 
       if (result.success) {
         toast({
-          title: 'Success',
+          title: tCommon('success'),
           description: result.message,
           variant: 'success',
         })
         router.refresh()
       } else {
         toast({
-          title: 'Error',
+          title: tCommon('error'),
           description: result.message,
           variant: 'destructive',
         })
@@ -70,14 +86,14 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
 
       if (result.success) {
         toast({
-          title: 'Success',
+          title: tCommon('success'),
           description: result.message,
           variant: 'success',
         })
         router.refresh()
       } else {
         toast({
-          title: 'Error',
+          title: tCommon('error'),
           description: result.message,
           variant: 'destructive',
         })
@@ -93,14 +109,14 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
 
       if (result.success) {
         toast({
-          title: 'Success',
+          title: tCommon('success'),
           description: result.message,
           variant: 'success',
         })
         router.refresh()
       } else {
         toast({
-          title: 'Error',
+          title: tCommon('error'),
           description: result.message,
           variant: 'destructive',
         })
@@ -121,39 +137,43 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                Invoice Details
+                {t('title')}
               </div>
               <InvoiceStatusBadge status={invoice.status} />
             </CardTitle>
             <CardDescription>
-              Created on {formatDateTime(invoice.createdAt, 'en', 'long', 'short')}
+              {t('createdOn')} {formatDateTime(invoice.createdAt, 'en', 'long', 'short')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-3">
               <div>
-                <p className="text-sm text-muted-foreground">Invoice Number</p>
+                <p className="text-sm text-muted-foreground">{t('invoiceNumber')}</p>
                 <p className="text-xl font-bold">{invoice.invoiceNumber}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Amount</p>
+                <p className="text-sm text-muted-foreground">{t('totalAmount')}</p>
                 <p className="text-2xl font-bold">{formatCurrency(invoice.totalAmount, 'en')}</p>
               </div>
               <Separator />
               <div>
-                <p className="text-sm text-muted-foreground">Created By</p>
+                <p className="text-sm text-muted-foreground">{t('createdBy')}</p>
                 <p className="font-medium">{invoice.createdBy.name}</p>
               </div>
               {invoice.paidAt && (
                 <>
                   <Separator />
                   <div>
-                    <p className="text-sm text-muted-foreground">Paid On</p>
-                    <p className="font-medium">{formatDateTime(invoice.paidAt, 'en', 'long', 'short')}</p>
+                    <p className="text-sm text-muted-foreground">{t('paidOn')}</p>
+                    <p className="font-medium">
+                      {formatDateTime(invoice.paidAt, 'en', 'long', 'short')}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Payment Method</p>
-                    <p className="font-medium">{invoice.paidFromBalance ? 'From Balance' : 'External Payment'}</p>
+                    <p className="text-sm text-muted-foreground">{t('paymentMethod')}</p>
+                    <p className="font-medium">
+                      {invoice.paidFromBalance ? t('fromBalance') : t('externalPayment')}
+                    </p>
                   </div>
                 </>
               )}
@@ -166,13 +186,13 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5" />
-              Dealer Information
+              {t('dealerInformation')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-3">
               <div>
-                <p className="text-sm text-muted-foreground">Name</p>
+                <p className="text-sm text-muted-foreground">{t('name')}</p>
                 <Link
                   href={`/admin/dealers/${invoice.dealer.id}`}
                   className="font-medium hover:underline flex items-center gap-1"
@@ -182,32 +202,34 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
                 </Link>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Email</p>
+                <p className="text-sm text-muted-foreground">{t('email')}</p>
                 <p className="font-medium">{invoice.dealer.email}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Phone</p>
+                <p className="text-sm text-muted-foreground">{t('phone')}</p>
                 <p className="font-medium">{invoice.dealer.phone}</p>
               </div>
               {invoice.dealer.companyName && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Company</p>
+                  <p className="text-sm text-muted-foreground">{t('company')}</p>
                   <p className="font-medium">{invoice.dealer.companyName}</p>
                 </div>
               )}
               <div>
-                <p className="text-sm text-muted-foreground">Address</p>
+                <p className="text-sm text-muted-foreground">{t('address')}</p>
                 <p className="font-medium">{invoice.dealer.address}</p>
               </div>
               <Separator />
               <div>
-                <p className="text-sm text-muted-foreground">Current Balance</p>
+                <p className="text-sm text-muted-foreground">{t('currentBalance')}</p>
                 <p className="text-xl font-bold">{formatCurrency(invoice.dealer.balance, 'en')}</p>
               </div>
               {isPendingInvoice && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Balance After Payment</p>
-                  <p className={`text-xl font-bold ${invoice.dealer.balance - invoice.totalAmount < 0 ? 'text-destructive' : 'text-success'}`}>
+                  <p className="text-sm text-muted-foreground">{t('balanceAfterPayment')}</p>
+                  <p
+                    className={`text-xl font-bold ${invoice.dealer.balance - invoice.totalAmount < 0 ? 'text-destructive' : 'text-success'}`}
+                  >
                     {formatCurrency(invoice.dealer.balance - invoice.totalAmount, 'en')}
                   </p>
                 </div>
@@ -219,19 +241,20 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
         {/* Invoice Items Card */}
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Invoice Items ({invoice.items.length} vehicle{invoice.items.length !== 1 ? 's' : ''})</CardTitle>
-            <CardDescription>
-              Vehicles included in this invoice
-            </CardDescription>
+            <CardTitle>
+              {t('invoiceItems')} ({invoice.items.length}{' '}
+              {invoice.items.length !== 1 ? t('vehicles') : t('vehicle')})
+            </CardTitle>
+            <CardDescription>{t('vehiclesIncluded')}</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Vehicle</TableHead>
-                  <TableHead>VIN</TableHead>
-                  <TableHead className="hidden md:table-cell">Lot #</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>{t('vehicleColumn')}</TableHead>
+                  <TableHead>{t('vinColumn')}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t('lotColumn')}</TableHead>
+                  <TableHead className="text-right">{t('amountColumn')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -245,9 +268,7 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
                         {item.vehicle.year} {item.vehicle.make.name} {item.vehicle.model.name}
                       </Link>
                     </TableCell>
-                    <TableCell className="font-mono text-sm">
-                      {item.vehicle.vin}
-                    </TableCell>
+                    <TableCell className="font-mono text-sm">{item.vehicle.vin}</TableCell>
                     <TableCell className="hidden md:table-cell text-muted-foreground">
                       {item.vehicle.lotNumber || '-'}
                     </TableCell>
@@ -258,7 +279,7 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
                 ))}
                 <TableRow className="bg-muted/50">
                   <TableCell colSpan={3} className="font-bold text-right">
-                    Total
+                    {t('total')}
                   </TableCell>
                   <TableCell className="text-right font-bold">
                     {formatCurrency(invoice.totalAmount, 'en')}
@@ -272,40 +293,40 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
 
       {/* Action Buttons */}
       {isPendingInvoice && mounted && (
-        <div className="flex flex-wrap gap-4 mt-6">
+        <div className="grid grid-cols-1 gap-3 mt-6 sm:flex sm:flex-wrap sm:gap-4">
           <Button
             size="lg"
             onClick={() => setShowPayFromBalanceDialog(true)}
             disabled={isPending}
+            className="w-full sm:w-auto"
           >
             <Wallet className="mr-2 h-5 w-5" />
-            Pay from Balance
+            {t('payFromBalance')}
           </Button>
           <Button
             size="lg"
             variant="outline"
             onClick={() => setShowPayExternalDialog(true)}
             disabled={isPending}
+            className="w-full sm:w-auto"
           >
             <CreditCard className="mr-2 h-5 w-5" />
-            Mark as Paid (External)
+            <span className="hidden sm:inline">{t('markAsPaidExternal')}</span>
+            <span className="sm:hidden">{t('externalPayment')}</span>
           </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            disabled={isPending}
-          >
+          <Button size="lg" variant="outline" disabled={isPending} className="w-full sm:w-auto">
             <Download className="mr-2 h-5 w-5" />
-            Download PDF
+            {t('downloadPdf')}
           </Button>
           <Button
             size="lg"
             variant="destructive"
             onClick={() => setShowCancelDialog(true)}
             disabled={isPending}
+            className="w-full sm:w-auto"
           >
             <XCircle className="mr-2 h-5 w-5" />
-            Cancel Invoice
+            {t('cancelInvoice')}
           </Button>
         </div>
       )}
@@ -314,7 +335,7 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
         <div className="flex gap-4 mt-6">
           <Button size="lg" variant="outline" disabled={isPending}>
             <Download className="mr-2 h-5 w-5" />
-            Download PDF
+            {t('downloadPdf')}
           </Button>
         </div>
       )}
@@ -323,14 +344,27 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
       <Dialog open={showPayFromBalanceDialog} onOpenChange={setShowPayFromBalanceDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Pay Invoice from Balance</DialogTitle>
+            <DialogTitle>{t('payFromBalanceTitle')}</DialogTitle>
             <DialogDescription>
-              Mark invoice {invoice.invoiceNumber} ({formatCurrency(invoice.totalAmount, 'en')}) as paid and deduct from {invoice.dealer.name}&apos;s balance?
+              {t('payFromBalanceConfirm')
+                .replace('{invoiceNumber}', invoice.invoiceNumber)
+                .replace('{dealerName}', invoice.dealer.name)}{' '}
+              ({formatCurrency(invoice.totalAmount, 'en')})
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-muted-foreground">Current Balance: <span className="font-medium">{formatCurrency(invoice.dealer.balance, 'en')}</span></p>
-            <p className="text-sm text-muted-foreground">After Payment: <span className={`font-medium ${invoice.dealer.balance - invoice.totalAmount < 0 ? 'text-destructive' : 'text-success'}`}>{formatCurrency(invoice.dealer.balance - invoice.totalAmount, 'en')}</span></p>
+            <p className="text-sm text-muted-foreground">
+              {t('currentBalanceLabel')}{' '}
+              <span className="font-medium">{formatCurrency(invoice.dealer.balance, 'en')}</span>
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {t('afterPaymentLabel')}{' '}
+              <span
+                className={`font-medium ${invoice.dealer.balance - invoice.totalAmount < 0 ? 'text-destructive' : 'text-success'}`}
+              >
+                {formatCurrency(invoice.dealer.balance - invoice.totalAmount, 'en')}
+              </span>
+            </p>
           </div>
           <DialogFooter>
             <Button
@@ -338,11 +372,11 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
               onClick={() => setShowPayFromBalanceDialog(false)}
               disabled={isPending}
             >
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button onClick={handlePayFromBalance} disabled={isPending}>
               <CheckCircle className="mr-2 h-4 w-4" />
-              {isPending ? 'Processing...' : 'Pay from Balance'}
+              {isPending ? tCommon('loading') : t('payFromBalance')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -352,9 +386,10 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
       <Dialog open={showPayExternalDialog} onOpenChange={setShowPayExternalDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Mark as Paid (External Payment)</DialogTitle>
+            <DialogTitle>{t('markAsPaidTitle')}</DialogTitle>
             <DialogDescription>
-              Mark invoice {invoice.invoiceNumber} ({formatCurrency(invoice.totalAmount, 'en')}) as paid? This will NOT deduct from the dealer&apos;s balance.
+              {t('markAsPaidConfirm').replace('{invoiceNumber}', invoice.invoiceNumber)} (
+              {formatCurrency(invoice.totalAmount, 'en')})
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -363,11 +398,11 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
               onClick={() => setShowPayExternalDialog(false)}
               disabled={isPending}
             >
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button onClick={handlePayExternal} disabled={isPending}>
               <CheckCircle className="mr-2 h-4 w-4" />
-              {isPending ? 'Processing...' : 'Mark as Paid'}
+              {isPending ? tCommon('loading') : t('markAsPaid')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -377,9 +412,9 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cancel Invoice</DialogTitle>
+            <DialogTitle>{t('cancelInvoiceTitle')}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to cancel invoice {invoice.invoiceNumber}? This action cannot be undone.
+              {t('cancelInvoiceConfirm').replace('{invoiceNumber}', invoice.invoiceNumber)}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -388,11 +423,11 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
               onClick={() => setShowCancelDialog(false)}
               disabled={isPending}
             >
-              Keep Invoice
+              {t('keepInvoice')}
             </Button>
             <Button variant="destructive" onClick={handleCancel} disabled={isPending}>
               <XCircle className="mr-2 h-4 w-4" />
-              {isPending ? 'Cancelling...' : 'Cancel Invoice'}
+              {isPending ? tCommon('loading') : t('cancelInvoice')}
             </Button>
           </DialogFooter>
         </DialogContent>

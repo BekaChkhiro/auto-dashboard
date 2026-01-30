@@ -1,68 +1,55 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { changePassword } from '@/lib/actions/dealer-profile'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { changePasswordSchema, type ChangePasswordInput } from '@/lib/validations/dealer-profile'
 
 export function ChangePasswordForm() {
-  const [currentPassword, setCurrentPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isPending, startTransition] = useTransition()
   const { toast } = useToast()
+  const t = useTranslations('forms')
+  const tToasts = useTranslations('toasts')
 
-  const passwordsMatch = newPassword === confirmPassword
-  const newPasswordValid = newPassword.length >= 8
-  const isValid =
-    currentPassword.length > 0 && newPasswordValid && confirmPassword.length > 0 && passwordsMatch
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm<ChangePasswordInput>({
+    resolver: zodResolver(changePasswordSchema),
+    mode: 'onChange',
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    },
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!passwordsMatch) {
-      toast({
-        title: 'Passwords do not match',
-        description: 'Please make sure your new password and confirmation match.',
-        variant: 'destructive',
-      })
-      return
-    }
-
-    if (!newPasswordValid) {
-      toast({
-        title: 'Invalid password',
-        description: 'New password must be at least 8 characters.',
-        variant: 'destructive',
-      })
-      return
-    }
-
+  const onSubmit = (data: ChangePasswordInput) => {
     startTransition(async () => {
-      const result = await changePassword({
-        currentPassword,
-        newPassword,
-        confirmPassword,
-      })
+      const result = await changePassword(data)
 
       if (result.success) {
         toast({
-          title: 'Password changed',
+          title: tToasts('passwordChanged'),
           description: result.message,
         })
         // Reset form
-        setCurrentPassword('')
-        setNewPassword('')
-        setConfirmPassword('')
+        reset()
       } else {
         toast({
-          title: 'Change failed',
+          title: tToasts('changeFailed'),
           description: result.message,
           variant: 'destructive',
         })
@@ -71,18 +58,18 @@ export function ChangePasswordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="currentPassword">Current Password</Label>
+        <Label htmlFor="currentPassword">{t('currentPassword')}</Label>
         <div className="relative">
           <Input
             id="currentPassword"
             type={showCurrentPassword ? 'text' : 'password'}
-            placeholder="Enter your current password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
+            placeholder={t('enterCurrentPassword')}
+            {...register('currentPassword')}
             disabled={isPending}
             className="pr-10"
+            aria-invalid={!!errors.currentPassword}
           />
           <Button
             type="button"
@@ -98,19 +85,22 @@ export function ChangePasswordForm() {
             )}
           </Button>
         </div>
+        {errors.currentPassword && (
+          <p className="text-xs text-red-600">{errors.currentPassword.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="newPassword">New Password</Label>
+        <Label htmlFor="newPassword">{t('newPassword')}</Label>
         <div className="relative">
           <Input
             id="newPassword"
             type={showNewPassword ? 'text' : 'password'}
-            placeholder="Enter your new password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder={t('enterYourNewPassword')}
+            {...register('newPassword')}
             disabled={isPending}
             className="pr-10"
+            aria-invalid={!!errors.newPassword}
           />
           <Button
             type="button"
@@ -126,22 +116,20 @@ export function ChangePasswordForm() {
             )}
           </Button>
         </div>
-        {newPassword.length > 0 && !newPasswordValid && (
-          <p className="text-xs text-red-600">Password must be at least 8 characters</p>
-        )}
+        {errors.newPassword && <p className="text-xs text-red-600">{errors.newPassword.message}</p>}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm New Password</Label>
+        <Label htmlFor="confirmPassword">{t('confirmNewPassword')}</Label>
         <div className="relative">
           <Input
             id="confirmPassword"
             type={showConfirmPassword ? 'text' : 'password'}
-            placeholder="Confirm your new password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder={t('confirmYourNewPassword')}
+            {...register('confirmPassword')}
             disabled={isPending}
             className="pr-10"
+            aria-invalid={!!errors.confirmPassword}
           />
           <Button
             type="button"
@@ -157,8 +145,8 @@ export function ChangePasswordForm() {
             )}
           </Button>
         </div>
-        {confirmPassword.length > 0 && !passwordsMatch && (
-          <p className="text-xs text-red-600">Passwords do not match</p>
+        {errors.confirmPassword && (
+          <p className="text-xs text-red-600">{errors.confirmPassword.message}</p>
         )}
       </div>
 
@@ -166,10 +154,10 @@ export function ChangePasswordForm() {
         {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Changing Password...
+            {t('changingPassword')}
           </>
         ) : (
-          'Change Password'
+          t('changePassword')
         )}
       </Button>
     </form>

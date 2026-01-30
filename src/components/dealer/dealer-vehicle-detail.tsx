@@ -42,18 +42,16 @@ export function DealerVehicleDetail({ vehicle }: DealerVehicleDetailProps) {
             <Archive className="h-5 w-5" />
             <span className="font-medium">{t('vehicleArchived')}</span>
             {vehicle.archivedAt && (
-              <span className="text-sm">
-                ({format(new Date(vehicle.archivedAt), 'PP')})
-              </span>
+              <span className="text-sm">({format(new Date(vehicle.archivedAt), 'PP')})</span>
             )}
           </div>
         </div>
       )}
 
       {/* Main content grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Left column - Vehicle info */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-6 md:col-span-2 lg:col-span-2">
           {/* Overview card */}
           <Card>
             <CardHeader>
@@ -140,22 +138,10 @@ export function DealerVehicleDetail({ vehicle }: DealerVehicleDetailProps) {
             </CardHeader>
             <CardContent>
               <dl className="grid gap-4 sm:grid-cols-2">
-                <DetailItem
-                  label={t('country')}
-                  value={getLocalizedName(vehicle.country)}
-                />
-                <DetailItem
-                  label={t('state')}
-                  value={getLocalizedName(vehicle.state)}
-                />
-                <DetailItem
-                  label={t('city')}
-                  value={vehicle.city?.name || '-'}
-                />
-                <DetailItem
-                  label={t('port')}
-                  value={vehicle.port?.name || '-'}
-                />
+                <DetailItem label={t('country')} value={getLocalizedName(vehicle.country)} />
+                <DetailItem label={t('state')} value={getLocalizedName(vehicle.state)} />
+                <DetailItem label={t('city')} value={vehicle.city?.name || '-'} />
+                <DetailItem label={t('port')} value={vehicle.port?.name || '-'} />
               </dl>
             </CardContent>
           </Card>
@@ -170,10 +156,7 @@ export function DealerVehicleDetail({ vehicle }: DealerVehicleDetailProps) {
             </CardHeader>
             <CardContent>
               <dl className="grid gap-4 sm:grid-cols-2">
-                <DetailItem
-                  label={t('shipName')}
-                  value={vehicle.shipName || '-'}
-                />
+                <DetailItem label={t('shipName')} value={vehicle.shipName || '-'} />
                 <DetailItem
                   label={t('containerNumber')}
                   value={vehicle.containerNumber || '-'}
@@ -193,7 +176,7 @@ export function DealerVehicleDetail({ vehicle }: DealerVehicleDetailProps) {
                   }
                 />
                 <DetailItem
-                  label="Transportation Cost"
+                  label={t('transportationPrice')}
                   value={`$${vehicle.transportationPrice.toLocaleString()}`}
                   highlight
                 />

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { getLocale, getMessages } from 'next-intl/server'
 import { IntlProvider } from '@/components/providers/intl-provider'
+import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
 
 const geistSans = Geist({
@@ -35,6 +36,7 @@ export default async function RootLayout({
       >
         <IntlProvider locale={locale} messages={messages}>
           {children}
+          <Toaster />
         </IntlProvider>
       </body>
     </html>

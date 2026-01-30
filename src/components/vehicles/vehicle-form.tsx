@@ -128,7 +128,12 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
   useEffect(() => {
     if (makeId) {
       // Skip fetch if we have pre-fetched data for the initial value
-      if (!initialLoadDone && options.models && options.models.length > 0 && vehicle?.makeId === makeId) {
+      if (
+        !initialLoadDone &&
+        options.models &&
+        options.models.length > 0 &&
+        vehicle?.makeId === makeId
+      ) {
         setInitialLoadDone(true)
         return
       }
@@ -245,12 +250,22 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="basic">Basic Info</TabsTrigger>
-          <TabsTrigger value="auction">Auction</TabsTrigger>
-          <TabsTrigger value="location">Location</TabsTrigger>
-          <TabsTrigger value="transportation">Transportation</TabsTrigger>
-          <TabsTrigger value="photos">Photos</TabsTrigger>
+        <TabsList className="mb-6 flex-nowrap">
+          <TabsTrigger value="basic" className="min-w-fit">
+            Basic Info
+          </TabsTrigger>
+          <TabsTrigger value="auction" className="min-w-fit">
+            Auction
+          </TabsTrigger>
+          <TabsTrigger value="location" className="min-w-fit">
+            Location
+          </TabsTrigger>
+          <TabsTrigger value="transportation" className="min-w-fit">
+            Transport
+          </TabsTrigger>
+          <TabsTrigger value="photos" className="min-w-fit">
+            Photos
+          </TabsTrigger>
         </TabsList>
 
         {/* Basic Info Tab */}
@@ -259,10 +274,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
             {/* Dealer */}
             <div className="space-y-2">
               <Label htmlFor="dealerId">Dealer *</Label>
-              <Select
-                value={dealerId}
-                onValueChange={(value) => setValue('dealerId', value)}
-              >
+              <Select value={dealerId} onValueChange={(value) => setValue('dealerId', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select dealer" />
                 </SelectTrigger>
@@ -289,18 +301,13 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 maxLength={17}
                 className="uppercase"
               />
-              {errors.vin && (
-                <p className="text-sm text-destructive">{errors.vin.message}</p>
-              )}
+              {errors.vin && <p className="text-sm text-destructive">{errors.vin.message}</p>}
             </div>
 
             {/* Make */}
             <div className="space-y-2">
               <Label htmlFor="makeId">Make *</Label>
-              <Select
-                value={makeId}
-                onValueChange={(value) => setValue('makeId', value)}
-              >
+              <Select value={makeId} onValueChange={(value) => setValue('makeId', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select make" />
                 </SelectTrigger>
@@ -312,9 +319,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                   ))}
                 </SelectContent>
               </Select>
-              {errors.makeId && (
-                <p className="text-sm text-destructive">{errors.makeId.message}</p>
-              )}
+              {errors.makeId && <p className="text-sm text-destructive">{errors.makeId.message}</p>}
             </div>
 
             {/* Model */}
@@ -360,22 +365,14 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 min={1900}
                 max={new Date().getFullYear() + 1}
               />
-              {errors.year && (
-                <p className="text-sm text-destructive">{errors.year.message}</p>
-              )}
+              {errors.year && <p className="text-sm text-destructive">{errors.year.message}</p>}
             </div>
 
             {/* Color */}
             <div className="space-y-2">
               <Label htmlFor="color">Color</Label>
-              <Input
-                id="color"
-                {...register('color')}
-                placeholder="e.g., White, Black, Silver"
-              />
-              {errors.color && (
-                <p className="text-sm text-destructive">{errors.color.message}</p>
-              )}
+              <Input id="color" {...register('color')} placeholder="e.g., White, Black, Silver" />
+              {errors.color && <p className="text-sm text-destructive">{errors.color.message}</p>}
             </div>
 
             {/* Damage Type */}
@@ -383,9 +380,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
               <Label htmlFor="damageType">Damage Type</Label>
               <Select
                 value={selectedDamageType}
-                onValueChange={(value) =>
-                  setValue('damageType', value as DamageTypeValue)
-                }
+                onValueChange={(value) => setValue('damageType', value as DamageTypeValue)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select damage type" />
@@ -399,9 +394,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 </SelectContent>
               </Select>
               {errors.damageType && (
-                <p className="text-sm text-destructive">
-                  {errors.damageType.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.damageType.message}</p>
               )}
             </div>
 
@@ -412,9 +405,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 <Checkbox
                   id="hasKeys"
                   checked={hasKeys}
-                  onCheckedChange={(checked) =>
-                    setValue('hasKeys', checked === true)
-                  }
+                  onCheckedChange={(checked) => setValue('hasKeys', checked === true)}
                 />
                 <label
                   htmlFor="hasKeys"
@@ -433,10 +424,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
             {/* Auction */}
             <div className="space-y-2">
               <Label htmlFor="auctionId">Auction *</Label>
-              <Select
-                value={auctionId}
-                onValueChange={(value) => setValue('auctionId', value)}
-              >
+              <Select value={auctionId} onValueChange={(value) => setValue('auctionId', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select auction" />
                 </SelectTrigger>
@@ -449,24 +437,16 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 </SelectContent>
               </Select>
               {errors.auctionId && (
-                <p className="text-sm text-destructive">
-                  {errors.auctionId.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.auctionId.message}</p>
               )}
             </div>
 
             {/* Lot Number */}
             <div className="space-y-2">
               <Label htmlFor="lotNumber">Lot Number *</Label>
-              <Input
-                id="lotNumber"
-                {...register('lotNumber')}
-                placeholder="Enter lot number"
-              />
+              <Input id="lotNumber" {...register('lotNumber')} placeholder="Enter lot number" />
               {errors.lotNumber && (
-                <p className="text-sm text-destructive">
-                  {errors.lotNumber.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.lotNumber.message}</p>
               )}
             </div>
 
@@ -480,9 +460,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 type="url"
               />
               {errors.auctionLink && (
-                <p className="text-sm text-destructive">
-                  {errors.auctionLink.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.auctionLink.message}</p>
               )}
             </div>
           </div>
@@ -494,10 +472,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
             {/* Country */}
             <div className="space-y-2">
               <Label htmlFor="countryId">Country *</Label>
-              <Select
-                value={countryId}
-                onValueChange={(value) => setValue('countryId', value)}
-              >
+              <Select value={countryId} onValueChange={(value) => setValue('countryId', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select country" />
                 </SelectTrigger>
@@ -510,9 +485,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 </SelectContent>
               </Select>
               {errors.countryId && (
-                <p className="text-sm text-destructive">
-                  {errors.countryId.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.countryId.message}</p>
               )}
             </div>
 
@@ -544,9 +517,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 </SelectContent>
               </Select>
               {errors.stateId && (
-                <p className="text-sm text-destructive">
-                  {errors.stateId.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.stateId.message}</p>
               )}
             </div>
 
@@ -577,11 +548,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                   ))}
                 </SelectContent>
               </Select>
-              {errors.cityId && (
-                <p className="text-sm text-destructive">
-                  {errors.cityId.message}
-                </p>
-              )}
+              {errors.cityId && <p className="text-sm text-destructive">{errors.cityId.message}</p>}
             </div>
 
             {/* Port */}
@@ -611,11 +578,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                   ))}
                 </SelectContent>
               </Select>
-              {errors.portId && (
-                <p className="text-sm text-destructive">
-                  {errors.portId.message}
-                </p>
-              )}
+              {errors.portId && <p className="text-sm text-destructive">{errors.portId.message}</p>}
             </div>
           </div>
         </TabsContent>
@@ -635,19 +598,14 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 placeholder="0.00"
               />
               {errors.transportationPrice && (
-                <p className="text-sm text-destructive">
-                  {errors.transportationPrice.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.transportationPrice.message}</p>
               )}
             </div>
 
             {/* Status */}
             <div className="space-y-2">
               <Label htmlFor="statusId">Status *</Label>
-              <Select
-                value={statusId}
-                onValueChange={(value) => setValue('statusId', value)}
-              >
+              <Select value={statusId} onValueChange={(value) => setValue('statusId', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -660,24 +618,16 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 </SelectContent>
               </Select>
               {errors.statusId && (
-                <p className="text-sm text-destructive">
-                  {errors.statusId.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.statusId.message}</p>
               )}
             </div>
 
             {/* Ship Name */}
             <div className="space-y-2">
               <Label htmlFor="shipName">Ship Name</Label>
-              <Input
-                id="shipName"
-                {...register('shipName')}
-                placeholder="Enter ship name"
-              />
+              <Input id="shipName" {...register('shipName')} placeholder="Enter ship name" />
               {errors.shipName && (
-                <p className="text-sm text-destructive">
-                  {errors.shipName.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.shipName.message}</p>
               )}
             </div>
 
@@ -690,9 +640,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
                 placeholder="Enter container number"
               />
               {errors.containerNumber && (
-                <p className="text-sm text-destructive">
-                  {errors.containerNumber.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.containerNumber.message}</p>
               )}
             </div>
 
@@ -700,9 +648,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
             <div className="space-y-2">
               <Label htmlFor="eta">ETA</Label>
               <Input id="eta" type="date" {...register('eta')} />
-              {errors.eta && (
-                <p className="text-sm text-destructive">{errors.eta.message}</p>
-              )}
+              {errors.eta && <p className="text-sm text-destructive">{errors.eta.message}</p>}
             </div>
           </div>
         </TabsContent>
@@ -710,10 +656,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
         {/* Photos Tab */}
         <TabsContent value="photos" className="space-y-6">
           {isEdit && vehicle ? (
-            <PhotoManager
-              vehicleId={vehicle.id}
-              photos={vehicle.photos || []}
-            />
+            <PhotoManager vehicleId={vehicle.id} photos={vehicle.photos || []} />
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="rounded-full bg-muted p-4 mb-4">
@@ -721,8 +664,7 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
               </div>
               <h3 className="text-lg font-medium mb-2">Photos Not Available</h3>
               <p className="text-muted-foreground max-w-md">
-                Save the vehicle first to add photos. Photo uploads require a
-                saved vehicle record.
+                Save the vehicle first to add photos. Photo uploads require a saved vehicle record.
               </p>
             </div>
           )}
@@ -730,8 +672,17 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
       </Tabs>
 
       {/* Form Actions */}
-      <div className="flex gap-4 mt-8 pt-6 border-t">
-        <Button type="submit" disabled={isPending}>
+      <div className="flex flex-col-reverse gap-3 mt-8 pt-6 border-t sm:flex-row sm:gap-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.push('/admin/vehicles')}
+          disabled={isPending}
+          className="w-full sm:w-auto"
+        >
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
           {isPending
             ? isEdit
               ? 'Updating...'
@@ -739,14 +690,6 @@ export function VehicleForm({ mode, options, vehicle }: VehicleFormProps) {
             : isEdit
               ? 'Update Vehicle'
               : 'Create Vehicle'}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push('/admin/vehicles')}
-          disabled={isPending}
-        >
-          Cancel
         </Button>
       </div>
     </form>

@@ -109,9 +109,7 @@ export function DealerForm({ mode, dealer }: DealerFormProps) {
 
     startTransition(async () => {
       const result =
-        isEdit && dealer
-          ? await updateDealer(dealer.id, data)
-          : await createDealer(data)
+        isEdit && dealer ? await updateDealer(dealer.id, data) : await createDealer(data)
 
       if (result.success) {
         toast({
@@ -136,28 +134,15 @@ export function DealerForm({ mode, dealer }: DealerFormProps) {
         {/* Name */}
         <div className="space-y-2">
           <Label htmlFor="name">Name *</Label>
-          <Input
-            id="name"
-            {...register('name')}
-            placeholder="Enter dealer name"
-          />
-          {errors.name && (
-            <p className="text-sm text-destructive">{errors.name.message}</p>
-          )}
+          <Input id="name" {...register('name')} placeholder="Enter dealer name" />
+          {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
         </div>
 
         {/* Email */}
         <div className="space-y-2">
           <Label htmlFor="email">Email *</Label>
-          <Input
-            id="email"
-            type="email"
-            {...register('email')}
-            placeholder="Enter email address"
-          />
-          {errors.email && (
-            <p className="text-sm text-destructive">{errors.email.message}</p>
-          )}
+          <Input id="email" type="email" {...register('email')} placeholder="Enter email address" />
+          {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
         </div>
 
         {/* Password */}
@@ -171,35 +156,21 @@ export function DealerForm({ mode, dealer }: DealerFormProps) {
             {...register('password')}
             placeholder={isEdit ? 'Enter new password' : 'Enter password'}
           />
-          {errors.password && (
-            <p className="text-sm text-destructive">{errors.password.message}</p>
-          )}
+          {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
         </div>
 
         {/* Phone */}
         <div className="space-y-2">
           <Label htmlFor="phone">Phone *</Label>
-          <Input
-            id="phone"
-            {...register('phone')}
-            placeholder="Enter phone number"
-          />
-          {errors.phone && (
-            <p className="text-sm text-destructive">{errors.phone.message}</p>
-          )}
+          <Input id="phone" {...register('phone')} placeholder="Enter phone number" />
+          {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
         </div>
 
         {/* Address */}
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="address">Address *</Label>
-          <Input
-            id="address"
-            {...register('address')}
-            placeholder="Enter address"
-          />
-          {errors.address && (
-            <p className="text-sm text-destructive">{errors.address.message}</p>
-          )}
+          <Input id="address" {...register('address')} placeholder="Enter address" />
+          {errors.address && <p className="text-sm text-destructive">{errors.address.message}</p>}
         </div>
 
         {/* Company Name */}
@@ -211,9 +182,7 @@ export function DealerForm({ mode, dealer }: DealerFormProps) {
             placeholder="Enter company name (optional)"
           />
           {errors.companyName && (
-            <p className="text-sm text-destructive">
-              {errors.companyName.message}
-            </p>
+            <p className="text-sm text-destructive">{errors.companyName.message}</p>
           )}
         </div>
 
@@ -226,9 +195,7 @@ export function DealerForm({ mode, dealer }: DealerFormProps) {
             placeholder="Enter identification number (optional)"
           />
           {errors.identificationNumber && (
-            <p className="text-sm text-destructive">
-              {errors.identificationNumber.message}
-            </p>
+            <p className="text-sm text-destructive">{errors.identificationNumber.message}</p>
           )}
         </div>
 
@@ -242,9 +209,7 @@ export function DealerForm({ mode, dealer }: DealerFormProps) {
             {...register('balance', { valueAsNumber: true })}
             placeholder="0.00"
           />
-          {errors.balance && (
-            <p className="text-sm text-destructive">{errors.balance.message}</p>
-          )}
+          {errors.balance && <p className="text-sm text-destructive">{errors.balance.message}</p>}
         </div>
 
         {/* Discount */}
@@ -259,11 +224,7 @@ export function DealerForm({ mode, dealer }: DealerFormProps) {
             {...register('discount', { valueAsNumber: true })}
             placeholder="0"
           />
-          {errors.discount && (
-            <p className="text-sm text-destructive">
-              {errors.discount.message}
-            </p>
-          )}
+          {errors.discount && <p className="text-sm text-destructive">{errors.discount.message}</p>}
           <p className="text-xs text-muted-foreground">
             Hidden discount percentage (0-100). Not visible to the dealer.
           </p>
@@ -274,9 +235,7 @@ export function DealerForm({ mode, dealer }: DealerFormProps) {
           <Label htmlFor="status">Status</Label>
           <Select
             value={status}
-            onValueChange={(value) =>
-              setValue('status', value as 'ACTIVE' | 'BLOCKED')
-            }
+            onValueChange={(value) => setValue('status', value as 'ACTIVE' | 'BLOCKED')}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select status" />
@@ -286,14 +245,21 @@ export function DealerForm({ mode, dealer }: DealerFormProps) {
               <SelectItem value="BLOCKED">Blocked</SelectItem>
             </SelectContent>
           </Select>
-          {errors.status && (
-            <p className="text-sm text-destructive">{errors.status.message}</p>
-          )}
+          {errors.status && <p className="text-sm text-destructive">{errors.status.message}</p>}
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <Button type="submit" disabled={isPending}>
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:gap-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.push('/admin/dealers')}
+          disabled={isPending}
+          className="w-full sm:w-auto"
+        >
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
           {isPending
             ? isEdit
               ? 'Updating...'
@@ -301,14 +267,6 @@ export function DealerForm({ mode, dealer }: DealerFormProps) {
             : isEdit
               ? 'Update Dealer'
               : 'Create Dealer'}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push('/admin/dealers')}
-          disabled={isPending}
-        >
-          Cancel
         </Button>
       </div>
     </form>

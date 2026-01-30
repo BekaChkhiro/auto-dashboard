@@ -1,12 +1,19 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { updateDealerProfile } from '@/lib/actions/dealer-profile'
 import { Loader2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  updateDealerProfileSchema,
+  type UpdateDealerProfileInput,
+} from '@/lib/validations/dealer-profile'
 
 interface EditProfileFormProps {
   initialPhone: string
@@ -14,36 +21,43 @@ interface EditProfileFormProps {
 }
 
 export function EditProfileForm({ initialPhone, initialAddress }: EditProfileFormProps) {
-  const [phone, setPhone] = useState(initialPhone)
-  const [address, setAddress] = useState(initialAddress)
   const [isPending, startTransition] = useTransition()
   const { toast } = useToast()
+  const t = useTranslations('forms')
+  const tToasts = useTranslations('toasts')
 
-  const hasChanges = phone !== initialPhone || address !== initialAddress
-  const isValid = phone.length >= 5 && address.length >= 5
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty },
+  } = useForm<UpdateDealerProfileInput>({
+    resolver: zodResolver(updateDealerProfileSchema),
+    defaultValues: {
+      phone: initialPhone,
+      address: initialAddress,
+    },
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!hasChanges) {
+  const onSubmit = (data: UpdateDealerProfileInput) => {
+    if (!isDirty) {
       toast({
-        title: 'No changes',
-        description: 'No changes were made to your profile.',
+        title: tToasts('noChanges'),
+        description: tToasts('noChangesDesc'),
       })
       return
     }
 
     startTransition(async () => {
-      const result = await updateDealerProfile({ phone, address })
+      const result = await updateDealerProfile(data)
 
       if (result.success) {
         toast({
-          title: 'Profile updated',
+          title: tToasts('profileUpdated'),
           description: result.message,
         })
       } else {
         toast({
-          title: 'Update failed',
+          title: tToasts('changeFailed'),
           description: result.message,
           variant: 'destructive',
         })
@@ -52,45 +66,41 @@ export function EditProfileForm({ initialPhone, initialAddress }: EditProfileFor
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="phone">Phone Number</Label>
+        <Label htmlFor="phone">{t('phoneNumber')}</Label>
         <Input
           id="phone"
           type="tel"
-          placeholder="Enter your phone number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          placeholder={t('enterYourPhone')}
+          {...register('phone')}
           disabled={isPending}
+          aria-invalid={!!errors.phone}
         />
-        {phone.length > 0 && phone.length < 5 && (
-          <p className="text-xs text-red-600">Phone number must be at least 5 characters</p>
-        )}
+        {errors.phone && <p className="text-xs text-red-600">{errors.phone.message}</p>}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="address">Address</Label>
+        <Label htmlFor="address">{t('address')}</Label>
         <Input
           id="address"
           type="text"
-          placeholder="Enter your address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          placeholder={t('enterYourAddress')}
+          {...register('address')}
           disabled={isPending}
+          aria-invalid={!!errors.address}
         />
-        {address.length > 0 && address.length < 5 && (
-          <p className="text-xs text-red-600">Address must be at least 5 characters</p>
-        )}
+        {errors.address && <p className="text-xs text-red-600">{errors.address.message}</p>}
       </div>
 
-      <Button type="submit" disabled={isPending || !hasChanges || !isValid}>
+      <Button type="submit" disabled={isPending || !isDirty}>
         {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Saving...
+            {t('saving')}
           </>
         ) : (
-          'Save Changes'
+          t('saveChanges')
         )}
       </Button>
     </form>

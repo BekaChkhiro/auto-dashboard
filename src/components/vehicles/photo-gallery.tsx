@@ -64,10 +64,7 @@ export function PhotoGallery({ photos, className }: PhotoGalleryProps) {
 
   return (
     <div className={cn('space-y-4', className)}>
-      <Tabs
-        value={activeStage}
-        onValueChange={(value) => setActiveStage(value as PhotoStage)}
-      >
+      <Tabs value={activeStage} onValueChange={(value) => setActiveStage(value as PhotoStage)}>
         <TabsList className="grid w-full grid-cols-3">
           {STAGES.map((stage) => (
             <TabsTrigger key={stage} value={stage} className="relative">
@@ -98,6 +95,8 @@ export function PhotoGallery({ photos, className }: PhotoGalleryProps) {
                     <img
                       src={photo.url}
                       alt={`${getStageLabel(stage)} photo ${index + 1}`}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover transition-transform group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10" />

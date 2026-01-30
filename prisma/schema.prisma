@@ -174,12 +174,19 @@ model Vehicle {
   comments      VehicleComment[]
   invoiceItems  InvoiceItem[]
 
+  // Single-column indexes
   @@index([vin])
   @@index([lotNumber])
   @@index([dealerId])
   @@index([statusId])
   @@index([isArchived])
   @@index([createdAt])
+  // Compound indexes for common queries
+  @@index([dealerId, isArchived]) // Dealer's active vehicles
+  @@index([dealerId, statusId]) // Dealer vehicles by status
+  @@index([isArchived, statusId]) // Admin filter by status (active only)
+  @@index([isArchived, createdAt]) // Admin recent vehicles (active only)
+  @@index([portId, isArchived]) // Ports dashboard queries
 }
 
 // ============================================================================
@@ -553,4 +560,20 @@ model SystemSettings {
   value String
 
   @@index([key])
+}
+
+// ============================================================================
+// PASSWORD RESET TOKEN MODEL
+// ============================================================================
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  email     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  usedAt    DateTime?
+
+  @@index([token])
+  @@index([email])
 }

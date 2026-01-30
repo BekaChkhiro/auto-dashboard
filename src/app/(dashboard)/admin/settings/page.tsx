@@ -1,14 +1,33 @@
 import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { requireAdmin } from '@/lib/auth'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card, CardContent } from '@/components/ui/card'
 import { SettingsTabs } from '@/components/settings/settings-tabs'
-import { LocationsTab } from '@/components/settings/locations/locations-tab'
-import { MakesModelsTab } from '@/components/settings/makes-models/makes-models-tab'
-import { AuctionsTab } from '@/components/settings/auctions/auctions-tab'
-import { StatusesTab } from '@/components/settings/statuses/statuses-tab'
-import { CalculatorTab } from '@/components/settings/calculator/calculator-tab'
 import { Skeleton } from '@/components/ui/skeleton'
+
+// Dynamic imports for code splitting - tabs are only loaded when selected
+const LocationsTab = dynamic(
+  () => import('@/components/settings/locations/locations-tab').then((mod) => mod.LocationsTab),
+  { ssr: true }
+)
+const MakesModelsTab = dynamic(
+  () =>
+    import('@/components/settings/makes-models/makes-models-tab').then((mod) => mod.MakesModelsTab),
+  { ssr: true }
+)
+const AuctionsTab = dynamic(
+  () => import('@/components/settings/auctions/auctions-tab').then((mod) => mod.AuctionsTab),
+  { ssr: true }
+)
+const StatusesTab = dynamic(
+  () => import('@/components/settings/statuses/statuses-tab').then((mod) => mod.StatusesTab),
+  { ssr: true }
+)
+const CalculatorTab = dynamic(
+  () => import('@/components/settings/calculator/calculator-tab').then((mod) => mod.CalculatorTab),
+  { ssr: true }
+)
 
 interface SettingsPageProps {
   searchParams: Promise<{

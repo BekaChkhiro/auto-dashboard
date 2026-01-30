@@ -18,3 +18,15 @@ export const changePasswordSchema = z
 
 export type UpdateDealerProfileInput = z.infer<typeof updateDealerProfileSchema>
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>
+
+// Balance request schema
+export const balanceRequestSchema = z.object({
+  amount: z
+    .number()
+    .positive('Amount must be greater than 0')
+    .max(1000000, 'Amount cannot exceed $1,000,000'),
+  receiptUrl: z.string().url('Invalid receipt URL'),
+  comment: z.string().max(500, 'Comment cannot exceed 500 characters').optional(),
+})
+
+export type BalanceRequestInput = z.infer<typeof balanceRequestSchema>

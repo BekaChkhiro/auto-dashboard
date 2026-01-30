@@ -1,8 +1,10 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import { Car, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,44 +18,51 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { loginSchema, type LoginInput } from '@/lib/validations/auth'
 
 function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/'
+  const t = useTranslations('auth')
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
-
+  const onSubmit = async (data: LoginInput) => {
     try {
       const result = await signIn('credentials', {
-        email,
-        password,
+        email: data.email,
+        password: data.password,
         redirect: false,
       })
 
       if (result?.error) {
-        setError('Invalid email or password')
-        setIsLoading(false)
+        setError('root', { message: result.error || t('invalidCredentials') })
       } else if (result?.ok) {
         // Redirect to admin or dealer based on callbackUrl
-        const targetUrl = callbackUrl.startsWith('/admin') ? '/admin' :
-                          callbackUrl.startsWith('/dealer') ? '/dealer' : '/'
+        const targetUrl = callbackUrl.startsWith('/admin')
+          ? '/admin'
+          : callbackUrl.startsWith('/dealer')
+            ? '/dealer'
+            : '/'
         window.location.replace(targetUrl)
       } else {
-        setError('Login failed')
-        setIsLoading(false)
+        setError('root', { message: t('invalidCredentials') })
       }
     } catch {
-      setError('An error occurred')
-      setIsLoading(false)
+      setError('root', { message: t('invalidCredentials') })
     }
   }
 
@@ -63,47 +72,55 @@ function LoginForm() {
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
           <Car className="h-6 w-6 text-primary-foreground" />
         </div>
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
-        <CardDescription>
-          Enter your credentials to access your account
-        </CardDescription>
+        <CardTitle className="text-2xl">{t('welcomeBack')}</CardTitle>
+        <CardDescription>{t('enterCredentials')}</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
-          {error && (
+          {errors.root && (
             <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
+              {errors.root.message}
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('email')}</Label>
             <Input
               id="email"
               type="email"
               placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={isLoading}
+              {...register('email')}
+              disabled={isSubmitting}
+              aria-invalid={!!errors.email}
             />
+            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">{t('password')}</Label>
+              <Link
+                href="/forgot-password"
+                className="text-sm text-muted-foreground hover:text-primary"
+              >
+                {t('forgotPassword')}
+              </Link>
+            </div>
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={isLoading}
+              placeholder="••••••••"
+              {...register('password')}
+              disabled={isSubmitting}
+              aria-invalid={!!errors.password}
             />
+            {errors.password && (
+              <p className="text-xs text-destructive">{errors.password.message}</p>
+            )}
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Sign in
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t('signIn')}
           </Button>
         </CardFooter>
       </form>

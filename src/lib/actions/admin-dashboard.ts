@@ -113,23 +113,86 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 export async function getRecentActivity(limit: number = 10): Promise<RecentActivity[]> {
   await requireAdmin()
 
-  const activities: RecentActivity[] = []
+  // Run all queries in parallel for better performance
+  const [
+    recentVehicles,
+    recentStatusChanges,
+    recentBalanceRequests,
+    recentInvoices,
+    recentDealers,
+  ] = await Promise.all([
+    // Get recent vehicles added
+    db.vehicle.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        year: true,
+        createdAt: true,
+        dealer: { select: { name: true } },
+        make: { select: { name: true } },
+        model: { select: { name: true } },
+      },
+    }),
+    // Get recent status changes
+    db.vehicleStatusHistory.findMany({
+      take: 5,
+      orderBy: { changedAt: 'desc' },
+      select: {
+        id: true,
+        vehicleId: true,
+        changedAt: true,
+        vehicle: {
+          select: {
+            year: true,
+            make: { select: { name: true } },
+            model: { select: { name: true } },
+          },
+        },
+        status: { select: { nameEn: true } },
+      },
+    }),
+    // Get recent balance requests
+    db.balanceRequest.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        amount: true,
+        createdAt: true,
+        dealer: { select: { name: true } },
+      },
+    }),
+    // Get recent invoices
+    db.invoice.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        invoiceNumber: true,
+        totalAmount: true,
+        createdAt: true,
+        dealer: { select: { name: true } },
+      },
+    }),
+    // Get recent dealers added
+    db.user.findMany({
+      where: { role: 'DEALER' },
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        createdAt: true,
+      },
+    }),
+  ])
 
-  // Get recent vehicles added
-  const recentVehicles = await db.vehicle.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      dealer: { select: { name: true } },
-      make: { select: { name: true } },
-      model: { select: { name: true } },
-    },
-  })
-
-  for (const vehicle of recentVehicles) {
-    activities.push({
+  // Build activities array
+  const activities: RecentActivity[] = [
+    ...recentVehicles.map((vehicle) => ({
       id: `vehicle-${vehicle.id}`,
-      type: 'vehicle_added',
+      type: 'vehicle_added' as const,
       description: `New vehicle added: ${vehicle.year} ${vehicle.make.name} ${vehicle.model.name}`,
       metadata: {
         entityId: vehicle.id,
@@ -137,29 +200,10 @@ export async function getRecentActivity(limit: number = 10): Promise<RecentActiv
         dealerName: vehicle.dealer.name,
       },
       createdAt: vehicle.createdAt,
-    })
-  }
-
-  // Get recent status changes
-  const recentStatusChanges = await db.vehicleStatusHistory.findMany({
-    take: 5,
-    orderBy: { changedAt: 'desc' },
-    include: {
-      vehicle: {
-        include: {
-          make: { select: { name: true } },
-          model: { select: { name: true } },
-        },
-      },
-      status: { select: { nameEn: true } },
-      changedBy: { select: { name: true } },
-    },
-  })
-
-  for (const change of recentStatusChanges) {
-    activities.push({
+    })),
+    ...recentStatusChanges.map((change) => ({
       id: `status-${change.id}`,
-      type: 'status_change',
+      type: 'status_change' as const,
       description: `Status changed to "${change.status.nameEn}" for ${change.vehicle.year} ${change.vehicle.make.name} ${change.vehicle.model.name}`,
       metadata: {
         entityId: change.vehicleId,
@@ -167,22 +211,10 @@ export async function getRecentActivity(limit: number = 10): Promise<RecentActiv
         statusName: change.status.nameEn,
       },
       createdAt: change.changedAt,
-    })
-  }
-
-  // Get recent balance requests
-  const recentBalanceRequests = await db.balanceRequest.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      dealer: { select: { name: true } },
-    },
-  })
-
-  for (const request of recentBalanceRequests) {
-    activities.push({
+    })),
+    ...recentBalanceRequests.map((request) => ({
       id: `balance-${request.id}`,
-      type: 'balance_request',
+      type: 'balance_request' as const,
       description: `Balance request: $${Number(request.amount).toLocaleString()} from ${request.dealer.name}`,
       metadata: {
         entityId: request.id,
@@ -190,22 +222,10 @@ export async function getRecentActivity(limit: number = 10): Promise<RecentActiv
         amount: Number(request.amount),
       },
       createdAt: request.createdAt,
-    })
-  }
-
-  // Get recent invoices
-  const recentInvoices = await db.invoice.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      dealer: { select: { name: true } },
-    },
-  })
-
-  for (const invoice of recentInvoices) {
-    activities.push({
+    })),
+    ...recentInvoices.map((invoice) => ({
       id: `invoice-${invoice.id}`,
-      type: 'invoice_created',
+      type: 'invoice_created' as const,
       description: `Invoice ${invoice.invoiceNumber} created for ${invoice.dealer.name}`,
       metadata: {
         entityId: invoice.id,
@@ -214,37 +234,19 @@ export async function getRecentActivity(limit: number = 10): Promise<RecentActiv
         amount: Number(invoice.totalAmount),
       },
       createdAt: invoice.createdAt,
-    })
-  }
-
-  // Get recent dealers added
-  const recentDealers = await db.user.findMany({
-    where: { role: 'DEALER' },
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      createdAt: true,
-    },
-  })
-
-  for (const dealer of recentDealers) {
-    activities.push({
+    })),
+    ...recentDealers.map((dealer) => ({
       id: `dealer-${dealer.id}`,
-      type: 'dealer_added',
+      type: 'dealer_added' as const,
       description: `New dealer registered: ${dealer.name}`,
       metadata: {
         entityId: dealer.id,
         dealerName: dealer.name,
       },
       createdAt: dealer.createdAt,
-    })
-  }
+    })),
+  ]
 
   // Sort by date and limit
-  return activities
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-    .slice(0, limit)
+  return activities.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, limit)
 }
