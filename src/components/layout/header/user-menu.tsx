@@ -18,6 +18,7 @@ export function UserMenu() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration detection pattern
     setMounted(true)
   }, [])
 
@@ -37,8 +38,7 @@ export function UserMenu() {
   }
 
   const handleSignOut = async () => {
-    await signOut({ redirect: false })
-    window.location.replace('/login')
+    await signOut({ callbackUrl: '/login', redirect: true })
   }
 
   return (
@@ -53,22 +53,14 @@ export function UserMenu() {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {session.user.name}
-            </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {session.user.email}
-            </p>
+            <p className="text-sm font-medium leading-none">{session.user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <a
-            href={
-              session.user.role === 'ADMIN'
-                ? '/admin/settings'
-                : '/dealer/profile'
-            }
+            href={session.user.role === 'ADMIN' ? '/admin/settings' : '/dealer/profile'}
             className="flex cursor-pointer items-center"
           >
             <Settings className="mr-2 h-4 w-4" />
