@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { signOut, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { LogOut, Settings, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -38,7 +38,11 @@ export function UserMenu() {
   }
 
   const handleSignOut = async () => {
-    await signOut({ redirect: false })
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch {
+      // Ignore errors, still redirect
+    }
     window.location.href = '/login'
   }
 
