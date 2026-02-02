@@ -82,14 +82,15 @@
 | 3     | Dealer Features   | T3.1 - T3.7  | Dealer panel, balance, notifications   |
 | 4     | Advanced Features | T4.1 - T4.8  | Calculator, reports, ports dashboard   |
 | 5     | Polish & Deploy   | T5.1 - T5.6  | Testing, optimization, deployment      |
+| 6     | Landing Page      | T6.1 - T6.6  | Public landing page with calculator    |
 
 ---
 
 ## Phase 1: Foundation
 
-### T1.1 - Project Setup
+#### T1.1: Project Setup
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Description:** Initialize Next.js 14+ project with TypeScript, Tailwind CSS, ESLint, Prettier, Husky
 - **Acceptance Criteria:**
@@ -99,9 +100,9 @@
   - ESLint + Prettier configured
   - Git hooks with Husky
 
-### T1.2 - Database Schema Setup
+#### T1.2: Database Schema Setup
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** High
 - **Dependencies:** T1.1
 - **Description:** Create Prisma schema with all models from specification
@@ -111,9 +112,9 @@
   - Indexes for performance
   - Enum types defined
 
-### T1.3 - Seed Data
+#### T1.3: Seed Data
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T1.2
 - **Description:** Create seed script for initial data
@@ -125,9 +126,9 @@
   - Statuses (9 predefined statuses)
   - Popular car makes and models
 
-### T1.4 - Authentication Setup
+#### T1.4: Authentication Setup
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** High
 - **Dependencies:** T1.2
 - **Description:** Implement NextAuth.js with credentials provider
@@ -138,9 +139,9 @@
   - Password hashing with bcrypt
   - Protected routes middleware
 
-### T1.5 - UI Component Library Setup
+#### T1.5: UI Component Library Setup
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T1.1
 - **Description:** Configure shadcn/ui and create base components
@@ -151,9 +152,9 @@
   - Loading states components
   - Error boundary components
 
-### T1.6 - Layout Structure
+#### T1.6: Layout Structure
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T1.5
 - **Description:** Create layout components for admin and dealer panels
@@ -164,9 +165,9 @@
   - Header with user menu and language switcher
   - Breadcrumbs component
 
-### T1.7 - Internationalization Setup
+#### T1.7: Internationalization Setup
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T1.1
 - **Description:** Configure next-intl for Georgian/English support
@@ -176,9 +177,9 @@
   - Date/number formatting
   - RTL not needed (both languages LTR)
 
-### T1.8 - File Upload Infrastructure
+#### T1.8: File Upload Infrastructure
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T1.1
 - **Description:** Setup Cloudflare R2 integration for file uploads
@@ -192,9 +193,9 @@
 
 ## Phase 2: Admin Core Features
 
-### T2.1 - Admin Dashboard
+#### T2.1: Admin Dashboard
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T1.6
 - **Description:** Create admin main dashboard with statistics
@@ -205,9 +206,9 @@
   - Recent activity feed
   - Quick actions
 
-### T2.2 - Dealer Management - List
+#### T2.2: Dealer Management - List
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T2.1
 - **Description:** Dealers list page with search and filters
@@ -218,9 +219,9 @@
   - Sort by name, balance, created date
   - Quick actions (edit, block/unblock)
 
-### T2.3 - Dealer Management - CRUD
+#### T2.3: Dealer Management - CRUD
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** High
 - **Dependencies:** T2.2
 - **Description:** Create/Edit dealer forms and logic
@@ -232,9 +233,9 @@
   - Direct balance editing
   - Validation with Zod
 
-### T2.4 - Vehicle Management - List
+#### T2.4: Vehicle Management - List
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T2.1
 - **Description:** Vehicles list page with search and filters
@@ -245,9 +246,9 @@
   - Sort by date, status
   - Archived vehicles toggle
 
-### T2.5 - Vehicle Management - Create
+#### T2.5: Vehicle Management - Create
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** High
 - **Dependencies:** T2.4, T1.8
 - **Description:** Add new vehicle form
@@ -260,9 +261,9 @@
   - Photo upload by stage (auction, port, arrival)
   - Validation
 
-### T2.6 - Vehicle Management - Edit/View
+#### T2.6: Vehicle Management - Edit/View
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** High
 - **Dependencies:** T2.5
 - **Description:** Vehicle detail page and edit functionality
@@ -274,9 +275,9 @@
   - Comments section
   - Archive vehicle (soft delete)
 
-### T2.7 - Status Management
+#### T2.7: Status Management
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T2.6
 - **Description:** Vehicle status change with history tracking
@@ -286,9 +287,9 @@
   - Audit log entry
   - Notification to dealer on status change
 
-### T2.8 - Balance Requests Management
+#### T2.8: Balance Requests Management
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T2.3
 - **Description:** Admin view and process balance requests
@@ -299,9 +300,9 @@
   - On approve: update dealer balance, create transaction
   - Notification to dealer
 
-### T2.9 - Invoice Management
+#### T2.9: Invoice Management
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** High
 - **Dependencies:** T2.6
 - **Description:** Create and manage invoices
@@ -313,9 +314,9 @@
   - Mark as paid (deduct from balance)
   - Invoice status tracking
 
-### T2.10 - System Settings
+#### T2.10: System Settings
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T2.1
 - **Description:** Manage system configuration
@@ -329,9 +330,9 @@
 
 ## Phase 3: Dealer Features
 
-### T3.1 - Dealer Dashboard
+#### T3.1: Dealer Dashboard
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T1.6
 - **Description:** Dealer main dashboard
@@ -341,9 +342,9 @@
   - Recent notifications
   - Quick links to common actions
 
-### T3.2 - Dealer Vehicle List
+#### T3.2: Dealer Vehicle List
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T3.1
 - **Description:** Dealer's own vehicles list
@@ -353,9 +354,9 @@
   - Filter by status, date range
   - Click to view details
 
-### T3.3 - Dealer Vehicle Details
+#### T3.3: Dealer Vehicle Details
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** High
 - **Dependencies:** T3.2
 - **Description:** Vehicle detail page for dealers
@@ -366,9 +367,9 @@
   - Financial info (transportation price only, no discount shown)
   - Documents (if uploaded)
 
-### T3.4 - Balance Management
+#### T3.4: Balance Management
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T3.1
 - **Description:** Dealer balance view and top-up requests
@@ -378,9 +379,9 @@
   - Request history with statuses
   - Transaction history (deposits, withdrawals)
 
-### T3.5 - Dealer Invoices
+#### T3.5: Dealer Invoices
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T3.1
 - **Description:** Invoice viewing for dealers
@@ -390,9 +391,9 @@
   - Download PDF
   - Pay from balance button
 
-### T3.6 - Notifications
+#### T3.6: Notifications
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T3.1
 - **Description:** In-app notifications for dealers
@@ -402,9 +403,9 @@
   - Notification types: status change, balance, invoice, system
   - Notification bell in header with unread count
 
-### T3.7 - Dealer Profile
+#### T3.7: Dealer Profile
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Low
 - **Dependencies:** T3.1
 - **Description:** Profile viewing and password change
@@ -418,9 +419,9 @@
 
 ## Phase 4: Advanced Features
 
-### T4.1 - Calculator Configuration (Admin)
+#### T4.1: Calculator Configuration (Admin)
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** High
 - **Dependencies:** T2.10
 - **Description:** Admin panel for calculator prices
@@ -430,9 +431,9 @@
   - Insurance prices (by value ranges) management
   - Base transportation price setting
 
-### T4.2 - Calculator API
+#### T4.2: Calculator API
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T4.1
 - **Description:** Public API for external calculator
@@ -442,9 +443,9 @@
   - CORS configuration for external domain
   - Rate limiting
 
-### T4.3 - Ports Dashboard
+#### T4.3: Ports Dashboard
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** High
 - **Dependencies:** T2.6
 - **Description:** Visual ports overview with vehicle counts
@@ -454,9 +455,9 @@
   - Click port to see vehicles there
   - Visual indicators (colors, counts)
 
-### T4.4 - Reports - Dashboard
+#### T4.4: Reports - Dashboard
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T2.1
 - **Description:** Enhanced admin dashboard with reports
@@ -466,9 +467,9 @@
   - Monthly trends
   - Customizable date ranges
 
-### T4.5 - Reports - Export
+#### T4.5: Reports - Export
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T4.4
 - **Description:** Export data to Excel/PDF
@@ -478,9 +479,9 @@
   - Export transactions
   - PDF and Excel formats
 
-### T4.6 - Audit Log
+#### T4.6: Audit Log
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T2.1
 - **Description:** System-wide audit logging
@@ -491,9 +492,9 @@
   - Searchable audit log page
   - Filter by user, action type, date
 
-### T4.7 - Login Pages
+#### T4.7: Login Pages
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T1.4
 - **Description:** Authentication pages
@@ -503,9 +504,9 @@
   - Reset password page (with token)
   - Email sending via Resend
 
-### T4.8 - Error Handling & Loading States
+#### T4.8: Error Handling & Loading States
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** All previous
 - **Description:** Global error handling and UX polish
@@ -520,9 +521,9 @@
 
 ## Phase 5: Polish & Deploy
 
-### T5.1 - Performance Optimization
+#### T5.1: Performance Optimization
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** Phase 4
 - **Description:** Optimize for < 3s page load
@@ -532,9 +533,9 @@
   - Database query optimization
   - Caching strategy
 
-### T5.2 - Security Hardening
+#### T5.2: Security Hardening
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** Phase 4
 - **Description:** Implement security measures
@@ -545,9 +546,9 @@
   - SQL injection protection (Prisma)
   - Secure headers
 
-### T5.3 - Responsive Testing
+#### T5.3: Responsive Testing
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** Phase 4
 - **Description:** Test and fix mobile responsiveness
@@ -557,9 +558,9 @@
   - Tables scroll horizontally on mobile
   - Forms usable on mobile
 
-### T5.4 - Translation Completion
+#### T5.4: Translation Completion
 
-- **Status:** DONE ✅
+- [x] **Status**: DONE ✅
 - **Complexity:** Low
 - **Dependencies:** Phase 4
 - **Description:** Complete all translations
@@ -568,9 +569,9 @@
   - Error messages translated
   - Dates/numbers formatted per locale
 
-### T5.5 - Deployment Setup
+#### T5.5: Deployment Setup
 
-- **Status:** IN_PROGRESS 🔄
+- [x] **Status**: DONE ✅
 - **Complexity:** Medium
 - **Dependencies:** T5.1, T5.2
 - **Description:** Configure Railway deployment
@@ -581,9 +582,9 @@
   - Domain configuration
   - SSL certificate
 
-### T5.6 - Final Testing & Launch
+#### T5.6: Final Testing & Launch
 
-- **Status:** TODO
+- [ ] **Status**: BLOCKED 🚫
 - **Complexity:** High
 - **Dependencies:** T5.5
 - **Description:** End-to-end testing and launch
@@ -593,6 +594,95 @@
   - Dealer workflow validated
   - Performance verified
   - Production launch
+
+---
+
+## Phase 6: Landing Page
+
+#### T6.1: Landing Page Layout & Hero Section
+
+- [x] **Status**: DONE ✅
+- **Complexity:** Medium
+- **Dependencies:** T1.6, T1.7
+- **Description:** Create public landing page layout with responsive Hero section
+- **Acceptance Criteria:**
+  - Public route accessible without authentication
+  - Header with language switcher (KA/EN)
+  - Hero section with headline, subheadline, and CTA button
+  - Responsive design (mobile-first)
+  - Modern, professional design matching admin/dealer panels
+  - Navigation to other sections (smooth scroll)
+
+#### T6.2: Services Section
+
+- [ ] **Status**: TODO
+- **Complexity:** Low
+- **Dependencies:** T6.1
+- **Description:** Services/features section showcasing what we offer
+- **Acceptance Criteria:**
+  - Grid layout with service cards
+  - Icons for each service
+  - Services: Vehicle transportation, Tracking, Auction purchasing, etc.
+  - Bilingual content (KA/EN)
+  - Hover effects and animations
+
+#### T6.3: How It Works Section
+
+- [ ] **Status**: TODO
+- **Complexity:** Low
+- **Dependencies:** T6.1
+- **Description:** Step-by-step process explanation
+- **Acceptance Criteria:**
+  - Timeline or step-by-step layout
+  - Steps: Auction → Purchase → Transportation → Delivery
+  - Visual indicators (numbers, icons)
+  - Brief description for each step
+  - Bilingual content (KA/EN)
+
+#### T6.4: Calculator Integration
+
+- [ ] **Status**: TODO
+- **Complexity:** Medium
+- **Dependencies:** T6.1, T4.1, T4.2
+- **Description:** Integrate existing Calculator API into landing page
+- **Acceptance Criteria:**
+  - Use existing Calculator API endpoints (T4.2)
+  - Location selectors (Country → State → City → Port)
+  - Vehicle value input
+  - Real-time price calculation
+  - Display breakdown: Towing, Shipping, Insurance, Total
+  - Responsive form design
+  - Loading states and error handling
+
+#### T6.5: Contact Form
+
+- [ ] **Status**: TODO
+- **Complexity:** Medium
+- **Dependencies:** T6.1
+- **Description:** Contact form with email notification
+- **Acceptance Criteria:**
+  - Form fields: Name, Email, Phone, Message
+  - Form validation with Zod
+  - Submit to API endpoint
+  - Email notification via Resend (existing service)
+  - Success/error feedback to user
+  - Anti-spam measures (honeypot or rate limiting)
+  - Bilingual labels and messages
+
+#### T6.6: Footer & SEO
+
+- [ ] **Status**: TODO
+- **Complexity:** Low
+- **Dependencies:** T6.1
+- **Description:** Footer component and SEO optimization
+- **Acceptance Criteria:**
+  - Footer with contact info, social links
+  - Company info section
+  - Quick links to sections
+  - Meta tags for SEO
+  - Open Graph tags for social sharing
+  - Sitemap generation
+  - Bilingual meta content
 
 ---
 
@@ -626,6 +716,7 @@ The following features are explicitly excluded from this version:
 - Multi-language support (KA/EN)
 - Comprehensive audit logging
 - Soft delete for archiving
+- **[Phase 6]** Public landing page with calculator integration
 
 ### Technical Decisions
 
@@ -651,3 +742,30 @@ The following features are explicitly excluded from this version:
 1. Review this plan and adjust task details as needed
 2. Start development with: Phase 1 - Foundation tasks
 3. Track progress by updating task statuses
+
+---
+
+## Phase 6 Specification (Landing Page)
+
+**Added:** 2026-02-02
+
+### Overview
+
+Public-facing landing page with integrated transportation cost calculator. The page will be part of the main application and accessible without authentication.
+
+### Features
+
+1. **Hero Section** - Main banner with headline and CTA
+2. **Services Section** - Grid of service offerings
+3. **How It Works** - Step-by-step process visualization
+4. **Calculator** - Integration with existing Calculator API (T4.1, T4.2)
+5. **Contact Form** - Email notifications via Resend
+6. **Footer** - Contact info, links, SEO
+
+### Technical Details
+
+- **Route:** `/` or `/landing` (public, no auth required)
+- **Language:** Bilingual (KA/EN) using existing next-intl
+- **Calculator API:** Reuse T4.2 endpoints
+- **Contact:** Resend email service (existing)
+- **Design:** Modern, responsive, matching platform style

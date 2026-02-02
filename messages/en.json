@@ -643,5 +643,44 @@
   },
   "dealerVehicle": {
     "transportationCost": "Transportation Cost"
+  },
+  "landing": {
+    "nav": {
+      "services": "Services",
+      "howItWorks": "How It Works",
+      "calculator": "Calculator",
+      "contact": "Contact",
+      "login": "Login"
+    },
+    "hero": {
+      "badge": "Trusted Vehicle Transportation",
+      "headline": "Import Vehicles from USA & Canada to Georgia",
+      "subheadline": "Professional vehicle transportation service from American and Canadian auctions. Track your vehicle every step of the way with our real-time tracking platform.",
+      "cta": {
+        "primary": "Calculate Price",
+        "secondary": "Learn More"
+      },
+      "stats": {
+        "vehicles": {
+          "value": "5000+",
+          "label": "Vehicles Delivered"
+        },
+        "ports": {
+          "value": "50+",
+          "label": "Origin Ports"
+        },
+        "experience": {
+          "value": "10+",
+          "label": "Years Experience"
+        }
+      }
+    },
+    "footer": {
+      "description": "Your trusted partner for vehicle transportation from USA and Canada to Georgia. Professional service, real-time tracking, and competitive prices.",
+      "quickLinks": "Quick Links",
+      "contactUs": "Contact Us",
+      "address": "Tbilisi, Georgia",
+      "copyright": "© {year} AutoDealer. All rights reserved."
+    }
   }
 }

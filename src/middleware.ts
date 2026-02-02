@@ -71,11 +71,15 @@ export async function middleware(request: NextRequest) {
     '/reset-password',
     '/api/auth',
     '/api/calculator',
+    '/api/health',
   ]
-  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
 
-  // Redirect authenticated users away from login
-  if (isPublicRoute && token) {
+  // Check if it's a public route or the landing page
+  const isLandingPage = pathname === '/'
+  const isPublicRoute = isLandingPage || publicRoutes.some((route) => pathname.startsWith(route))
+
+  // Redirect authenticated users away from login (but not from landing page)
+  if (isPublicRoute && token && !isLandingPage) {
     const role = token.role as string
     const redirectUrl = role === 'ADMIN' ? '/admin' : '/dealer'
     return NextResponse.redirect(new URL(redirectUrl, request.url))
