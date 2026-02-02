@@ -38,7 +38,8 @@ export function UserMenu() {
   }
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/login', redirect: true })
+    await signOut({ redirect: false })
+    window.location.href = '/login'
   }
 
   return (
